@@ -1,5 +1,5 @@
 const incomeSection = document.querySelector(".income-area");
-const expansesSection = document.querySelector(".expanses-area");
+const expansesSection = document.querySelector(".expenses-area");
 const availableMoney = document.querySelector(".available-money");
 const addTransactionPanel = document.querySelector(".add-transaction-panel");
 
@@ -37,7 +37,7 @@ const checkForm = () => {
 		amountInput.value !== "" &&
 		categorySelect.value !== "none"
 	) {
-		console.log("ok");
+		createNewTransaction();
 	} else {
 		alert("Wypełnij wszystkie pola");
 	}
@@ -47,6 +47,50 @@ const clearInputs = () => {
 	nameInput.value = "";
 	amountInput.value = "";
 	categorySelect.selectedIndex = 0;
+};
+
+const createNewTransaction = () => {
+	const newTransaction = document.createElement("div");
+	newTransaction.classList.add("transaction");
+	newTransaction.setAttribute("id", ID);
+
+	checkCategory(selectedCategory);
+
+	newTransaction.innerHTML = `<p class="transaction-name">${categoryIcon} ${nameInput.value}</p>
+    <p class="transaction-amount">${amountInput.value}zł<button class="delete" onclick="deleteTransaction(${ID})"><i class="fas fa-times"></i></button></p>`;
+
+	amountInput.value > 0
+		? incomeSection.appendChild(newTransaction) &&
+		  newTransaction.classList.add("income")
+		: expansesSection.appendChild(newTransaction) &&
+		  newTransaction.classList.add("expenses");
+
+	moneyArr.push(parseFloat(amountInput));
+
+	closePanel();
+	ID++;
+	clearInputs();
+};
+
+const selectCategory = () => {
+	selectedCategory = categorySelect.options[categorySelect.selectedIndex].text;
+};
+
+const checkCategory = (transaction) => {
+	switch (transaction) {
+		case "[ + ] Przychód":
+			categoryIcon = '<i class="fas fa-money-bill-wave"></i>';
+			break;
+		case "[ - ] Zakupy":
+			categoryIcon = '<i class="fas fa-cart-arrow-down"></i>';
+			break;
+		case "[ - ] Jedzenie":
+			categoryIcon = '<i class="fas fa-hamburger"></i>';
+			break;
+		case "[ - ] Kino":
+			categoryIcon = '<i class="fas fa-film"></i>';
+			break;
+	}
 };
 
 addTransactionBtn.addEventListener("click", showPanel);
