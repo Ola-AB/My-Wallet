@@ -57,7 +57,9 @@ const createNewTransaction = () => {
 	checkCategory(selectedCategory);
 
 	newTransaction.innerHTML = `<p class="transaction-name">${categoryIcon} ${nameInput.value}</p>
-    <p class="transaction-amount">${amountInput.value}zł<button class="delete" onclick="deleteTransaction(${ID})"><i class="fas fa-times"></i></button></p>`;
+    <p class="transaction-amount">${amountInput.value}zł
+	<button class="delete" onclick="deleteTransaction(${ID})">
+	<i class="fas fa-times"></i></button></p>`;
 
 	amountInput.value > 0
 		? incomeSection.appendChild(newTransaction) &&
@@ -65,8 +67,9 @@ const createNewTransaction = () => {
 		: expansesSection.appendChild(newTransaction) &&
 		  newTransaction.classList.add("expenses");
 
-	moneyArr.push(parseFloat(amountInput));
+	moneyArr.push(parseFloat(amountInput.value));
 
+	countMoney(moneyArr);
 	closePanel();
 	ID++;
 	clearInputs();
@@ -93,6 +96,50 @@ const checkCategory = (transaction) => {
 	}
 };
 
+const countMoney = (money) => {
+	const newMoney = money.reduce((a, b) => a + b);
+	availableMoney.textContent = `${newMoney}zł`;
+};
+
+const deleteTransaction = (id) => {
+	const transactionToDelete = document.getElementById(id);
+
+	const transactionAmount = parseFloat(
+		transactionToDelete.childNodes[2].innerText
+	);
+	console.log(transactionAmount);
+	const indexOfTransaction = moneyArr.indexOf(transactionAmount);
+
+	moneyArr.splice(indexOfTransaction, 1);
+	countMoney(moneyArr);
+
+	transactionToDelete.classList.contains("income")
+		? incomeSection.removeChild(transactionToDelete)
+		: expansesSection.removeChild(transactionToDelete);
+	countMoney(moneyArr);
+};
+
+const deleteAllTransactions = () => {
+	incomeSection.innerHTML = "<h3>Przychód:</h3>";
+	expansesSection.innerHTML = "<h3>Wydatki:</h3>";
+	availableMoney.textContent = "0zł";
+	moneyArr = [0];
+};
+
+const changeStyleToLight = () => {
+	root.style.setProperty("--first-color", "#f9f9f9");
+	root.style.setProperty("--second-color", "#14161f");
+	root.style.setProperty("--border-color", "rgba(0, 0, 0, 0.2)");
+};
+const changeStyleDark = () => {
+	root.style.setProperty("--first-color", "#14161f");
+	root.style.setProperty("--second-color", "#f9f9f9");
+	root.style.setProperty("--border-color", "rgba(255, 255, 255, 0.4)");
+};
+
 addTransactionBtn.addEventListener("click", showPanel);
 cancelBtn.addEventListener("click", closePanel);
 saveBtn.addEventListener("click", checkForm);
+deleteAllBtn.addEventListener("click", deleteAllTransactions);
+lightBtn.addEventListener("click", changeStyleToLight);
+darkBtn.addEventListener("click", changeStyleDark);
